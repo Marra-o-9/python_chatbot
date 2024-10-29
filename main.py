@@ -10,8 +10,12 @@ app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def format_response(texts: List[str]) -> jsonify:
-    return jsonify({"fulfillmentMessages": [{"text": {"text": texts}}]})
+# Função para formatar resposta com ou sem evento de acompanhamento
+def format_response(texts: List[str], followup_event=None) -> jsonify:
+    response = {"fulfillmentMessages": [{"text": {"text": texts}}]}
+    if followup_event:
+        response["followupEventInput"] = {"name": followup_event}
+    return jsonify(response)
 
 # Função para consulta de endereço por CEP
 def get_address_by_cep(cep: str) -> str:
@@ -48,7 +52,8 @@ def dialogflow():
         cep = parameters.get('cep', None)
         if cep:
             address_info = get_address_by_cep(cep)
-            response = format_response([address_info])
+            # Envia resposta e define um evento de acompanhamento, por exemplo, 'continue_conversation'
+            response = format_response([address_info], followup_event="continue_conversation")
         else:
             response = format_response(["Por favor, informe um CEP válido."])
     else:
