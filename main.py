@@ -11,11 +11,10 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Função para formatar resposta com ou sem evento de acompanhamento
-def format_response(texts: List[str], followup_event=None) -> jsonify:
-    response = {"fulfillmentMessages": [{"text": {"text": texts}}]}
-    if followup_event:
-        response["followupEventInput"] = {"name": followup_event}
-    return jsonify(response)
+# Função para formatar resposta
+def format_response(texts: List[str], user_name: str = "") -> jsonify:
+    follow_up_message = f"Precisa de mais alguma coisa, {user_name}?" if user_name else "Precisa de mais alguma coisa?"
+    return jsonify({"fulfillmentMessages": [{"text": {"text": texts}}, {"text": {"text": [follow_up_message]}}]})
 
 # Função para consulta de endereço por CEP
 def get_address_by_cep(cep: str) -> str:
